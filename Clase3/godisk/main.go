@@ -11,36 +11,25 @@ import (
 )
 
 func main() {
-	// Crea un nuevo scanner que lee desde la entrada estándar (teclado)
-	// bufio.Scanner lee línea por línea de manera eficiente y maneja automáticamente los buffers
+	// bufio.Scanner lee línea por línea
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// Bucle infinito para mantener el programa en ejecución hasta que el usuario decida salir
-	// Este patrón se conoce como REPL (Read-Eval-Print Loop)
 	for {
-		// Muestra el prompt ">" para indicar al usuario que puede introducir un comando
 		fmt.Print("> ")
-
-		// Intenta leer una línea completa de entrada del usuario
-		// scanner.Scan() retorna true si logró leer una línea, false si hubo error o EOF
 		if !scanner.Scan() {
 			break // Si no puede leer (EOF o error), sale del bucle
 		}
-
 		// Obtiene el texto de la línea leída, sin el carácter de nueva línea
 		line := scanner.Text()
-
 		// Verifica si el usuario quiere salir del programa
 		// strings.ToLower() convierte a minúsculas para hacer la comparación insensible a mayúsculas
 		if strings.ToLower(line) == "exit" {
 			fmt.Println("Saliendo...")
 			break // Termina el bucle y por tanto el programa
 		}
-
-		// Divide la línea en palabras separadas por espacios en blanco
 		// strings.Fields() es más robusto que strings.Split() porque maneja múltiples espacios
 		parts := strings.Fields(line)
-
 		// Si el usuario solo presionó Enter (línea vacía), no hay nada que procesar
 		if len(parts) == 0 {
 			continue // Vuelve al inicio del bucle para mostrar el prompt nuevamente
@@ -67,11 +56,8 @@ func main() {
 			fit := mkdiskCmd.String("fit", "ff", "Tipo de ajuste (bf/ff/wf).")
 			path := mkdiskCmd.String("path", "", "Ruta del disco a crear.")
 
-			// Procesa los argumentos pasados al comando y asigna valores a los flags
 			// Parse() analiza los argumentos y llena las variables con los valores correspondientes
 			mkdiskCmd.Parse(args)
-
-			// Validaciones obligatorias antes de ejecutar el comando
 
 			// El parámetro path es obligatorio, no puede estar vacío
 			// *path desreferencia el puntero para obtener el valor real
