@@ -118,15 +118,21 @@ func ExecuteMkfs(id, formatType, fsType string) {
 	// --- 8. ESCRITURA DE BITMAPS Y BLOQUES (FORMATEO FULL) ---
 	// Se crean slices de bytes (arrays) para los bitmaps, inicializados en cero.
 	bmInode := make([]byte, superbloque.S_inodes_count)
+	for i := range bmInode {
+		bmInode[i] = '0' // CORRECCIÓN: Inicializar con el carácter '0'
+	}
 	bmBlock := make([]byte, superbloque.S_blocks_count)
+	for i := range bmBlock {
+		bmBlock[i] = '0' // CORRECCIÓN: Inicializar con el carácter '0'
+	}
 
 	if strings.ToLower(formatType) == "full" {
 		fmt.Println("Realizando formateo completo (full)...")
-		// Se escribe el bitmap de inodos (lleno de ceros) en su posición correspondiente.
+		// Se escribe el bitmap de inodos (lleno de '0') en su posición.
 		file.Seek(int64(superbloque.S_bm_inode_start), 0)
 		binary.Write(file, binary.BigEndian, &bmInode)
 
-		// Se escribe el bitmap de bloques (lleno de ceros) en su posición.
+		// Se escribe el bitmap de bloques (lleno de '0') en su posición.
 		file.Seek(int64(superbloque.S_bm_block_start), 0)
 		binary.Write(file, binary.BigEndian, &bmBlock)
 
@@ -215,11 +221,13 @@ func ExecuteMkfs(id, formatType, fsType string) {
 	// --- 11. ACTUALIZACIÓN DE ESTRUCTURAS DE CONTROL ---
 	// Marcar inodos 0 y 1 como usados ('1') en el bitmap.
 	file.Seek(int64(superbloque.S_bm_inode_start), 0)
-	binary.Write(file, binary.BigEndian, []byte{1, 1})
+	// CORRECCIÓN: Escribir los caracteres '1', '1'
+	binary.Write(file, binary.BigEndian, []byte{'1', '1'})
 
 	// Marcar bloques 0 y 1 como usados ('1') en el bitmap.
 	file.Seek(int64(superbloque.S_bm_block_start), 0)
-	binary.Write(file, binary.BigEndian, []byte{1, 1})
+	// CORRECCIÓN: Escribir los caracteres '1', '1'
+	binary.Write(file, binary.BigEndian, []byte{'1', '1'})
 
 	// Se actualizan los contadores y punteros a libres en la copia en memoria del superbloque.
 	superbloque.S_free_inodes_count -= 2

@@ -115,6 +115,14 @@ func executeCommand(commandLine string) string {
 		mkfsCmd.Parse(args)
 		commands.ExecuteMkfs(*id, *typeStr, *fs)
 
+	case "rep":
+		repCmd := flag.NewFlagSet("rep", flag.ContinueOnError)
+		name := repCmd.String("name", "", "Nombre del reporte (mbr, disk).")
+		path := repCmd.String("path", "", "Ruta donde se guardará el reporte.")
+		id := repCmd.String("id", "", "ID de la partición montada.")
+		repCmd.Parse(args)
+		commands.ExecuteRep(*name, *path, *id)
+
 	case "login":
 		loginCmd := flag.NewFlagSet("login", flag.ContinueOnError)
 		user := loginCmd.String("user", "", "Nombre de usuario")

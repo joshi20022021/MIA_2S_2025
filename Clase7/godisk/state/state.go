@@ -9,8 +9,8 @@ type MountedPartition struct {
 	Correl  int    // Número correlativo asignado al montar
 	Letter  rune   // Letra del disco
 	PartNum int    // Número de partición en ese disco
-	Size    int64  // Tamaño de la partición en bytes
-	Start   int64  // Byte de inicio de la partición en el disco
+	Size    int64  // Tamaño de la partición en bytes (CAMPO AÑADIDO)
+	Start   int64  // Byte de inicio de la partición en el disco (CAMPO AÑADIDO)
 }
 
 // GlobalMountedPartitions es la lista en memoria de todas las particiones montadas.

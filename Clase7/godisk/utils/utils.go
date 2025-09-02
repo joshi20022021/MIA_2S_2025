@@ -7,8 +7,10 @@ import (
 	"godisk/structs"
 	"math"
 	"os"
+	"os/exec"
 	"reflect"
 	"sort"
+	"strings"
 )
 
 // FreeSpace es una estructura exportada para manejar los espacios libres.
@@ -175,4 +177,55 @@ func ReadSuperblock(file *os.File, partitionStart int64) (structs.Superblock, er
 	file.Seek(partitionStart, 0)
 	err := binary.Read(file, binary.BigEndian, &sb)
 	return sb, err
+}
+
+func ReadBytes(file *os.File, start int64, size int64) ([]byte, error) {
+	bytes := make([]byte, size)
+	_, err := file.ReadAt(bytes, start)
+	if err != nil {
+		return nil, fmt.Errorf("error al leer bytes: %w", err)
+	}
+	return bytes, nil
+}
+
+func ReadInode(file *os.File, start int64) (structs.Inode, error) {
+	var inode structs.Inode
+	size := int64(binary.Size(inode))
+	data, err := ReadBytes(file, start, size)
+	if err != nil {
+		return structs.Inode{}, err
+	}
+	buffer := bytes.NewBuffer(data)
+	err = binary.Read(buffer, binary.BigEndian, &inode)
+	if err != nil {
+		return structs.Inode{}, fmt.Errorf("error al decodificar el inodo: %w", err)
+	}
+	return inode, nil
+}
+
+func GenerateReport(dotContent string, outputPath string) error {
+	cmd := exec.Command("dot", "-Tjpg", "-o", outputPath)
+	cmd.Stdin = strings.NewReader(dotContent)
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("error al ejecutar dot: %v\n%s", err, stderr.String())
+	}
+	return nil
+}
+
+func ReadFolderBlock(file *os.File, start int64) (structs.FolderBlock, error) {
+	var block structs.FolderBlock
+	size := int64(binary.Size(block))
+	data, err := ReadBytes(file, start, size)
+	if err != nil {
+		return structs.FolderBlock{}, err
+	}
+	buffer := bytes.NewBuffer(data)
+	err = binary.Read(buffer, binary.BigEndian, &block)
+	if err != nil {
+		return structs.FolderBlock{}, fmt.Errorf("error al decodificar el bloque de carpeta: %w", err)
+	}
+	return block, nil
 }
